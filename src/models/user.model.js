@@ -28,11 +28,11 @@ import jwt from "jsonwebtoken";
         type:String,
         required:true
     },
-    coverimage:{
+    coverImage:{
         type:String
     },
     refreshToken:{
-        type:string
+        type:String
     },
     watchHistory:[
         {
