@@ -50,7 +50,7 @@ userSchema.pre("save",async function (next) {
     this.password = await bycrypt.hash(this.password,saltrounds)
     next()
 })
-userSchema.methods.isPassword = async function(password){
+userSchema.methods.isPasswordCorrect = async function(password){
     return await bycrypt.compare(password,this.password)//1st password 2nd encrypted password
 }
 userSchema.methods.generateAccessToken = function(){
