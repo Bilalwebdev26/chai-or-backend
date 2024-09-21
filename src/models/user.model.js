@@ -20,7 +20,7 @@ import jwt from "jsonwebtoken";
         type:String,
         required:true
     },
-    fullname:{
+    fullName:{
         type:String,
         required:true
     },
@@ -47,7 +47,7 @@ userSchema.pre("save",async function (next) {
         return next()
     }
     let saltrounds = 10
-    this.password = bycrypt.hash(this.password,saltrounds)
+    this.password = await bycrypt.hash(this.password,saltrounds)
     next()
 })
 userSchema.methods.isPassword = async function(password){
