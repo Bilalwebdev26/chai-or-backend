@@ -111,5 +111,24 @@ const logoutUser = asyncHandler(async(req,res)=>{
     }
     return res.status(200).clearCookie("accessToken",option).clearCookie("refreshToken",option).json(new ApiResponse(201,"User logout Successfully",{user}))
 })
+const updateProfileNames = asyncHandler(async(req,res)=>{
+    const{fullName,username} = req.body
+    if(!(fullName || username)){
+        throw new ApiError(400,"All fileds are empty")
+    }
+    const user = await User.findOne({username})
+    const newuser = await User.findByIdAndUpdate(user._id,{
+      $set:{
+        fullName:fullName,
+        username:username
+      }
+    },
+    {
+        new:true
+    }
+).select("-password -refreshToken")
+return res.status(200).json(new ApiResponse(201,"Username and Fullname Update Successfully",{newuser}))
 
-export {registerUser,loginUser,logoutUser}
+})
+
+export {registerUser,loginUser,logoutUser,updateProfileNames}
