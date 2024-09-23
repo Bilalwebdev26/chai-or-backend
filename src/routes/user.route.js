@@ -18,7 +18,7 @@ router.route("/register").post(upload.fields([
 router.route("/login").post(loginUser)
 //secure routes
 router.route("/logout").post(verifyJwt,logoutUser)
-router.route("refreshtoken").post(refreshAccessToken)
+router.route("/refreshtoken").post(refreshAccessToken)
 router.route("/updateusername").put(verifyJwt,updateProfileNames)
 router.route("/changepassword").post(verifyJwt,changeCurrentPassword)
 
