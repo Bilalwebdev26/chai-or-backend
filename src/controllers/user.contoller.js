@@ -112,15 +112,24 @@ const logoutUser = asyncHandler(async(req,res)=>{
     return res.status(200).clearCookie("accessToken",option).clearCookie("refreshToken",option).json(new ApiResponse(201,"User logout Successfully",{user}))
 })
 const updateProfileNames = asyncHandler(async(req,res)=>{
-    const{fullName,username} = req.body
-    if(!(fullName || username)){
+    const{newfullName,newusername} = req.body
+    console.log("Username : ",newusername)
+    console.log("Fullname : ",newfullName)
+    if(!newfullName && !newusername){
         throw new ApiError(400,"All fileds are empty")
     }
-    const user = await User.findOne({username})
+    const user = await User.findById(req.user?._id)
+    // this is first way to save 
+
+    // user.username=newusername;
+    // user.fullName=newfullName
+    // await user.save()
+
+    // This is 2nd way to save
     const newuser = await User.findByIdAndUpdate(user._id,{
       $set:{
-        fullName:fullName,
-        username:username
+        fullName:newfullName,
+        username:newusername
       }
     },
     {
@@ -130,5 +139,28 @@ const updateProfileNames = asyncHandler(async(req,res)=>{
 return res.status(200).json(new ApiResponse(201,"Username and Fullname Update Successfully",{newuser}))
 
 })
+const changeCurrentPassword = asyncHandler(async(req,res)=>{
+    const {oldPassword , newPassword , confirmPassword} = req.body
+    if(!oldPassword || !newPassword || !confirmPassword){
+        throw new ApiError(400,"All fields are required")
+    }
+    const user = await User.findById(req.user?._id)
+    const checkPass = await user.isPasswordCorrect(oldPassword)
+    if(!checkPass){
+        throw new ApiError(400,"Wrong Password Entered")
+    }
+    if(!(newPassword === confirmPassword)){
+        throw new ApiError(400,"Confirm Password not matched")
+    }
+    user.password = newPassword
+    await user.save()
 
-export {registerUser,loginUser,logoutUser,updateProfileNames}
+res.status(200).json(new ApiResponse(201,"Password Changed Successfully",{}))
+})
+const getCurrentUser = asyncHandler(async(req,res)=>{
+    const currentUser = await User.findById(req.user?._id).select("-password -refreshToken")
+    return res.status(200).json(200,"Current user fetched Successfully",req.user)
+})
+
+
+export {registerUser,loginUser,logoutUser,updateProfileNames,changeCurrentPassword,getCurrentUser}
