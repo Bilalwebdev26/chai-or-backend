@@ -293,6 +293,79 @@ const updateCoverimg = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(201, "Cover Image update Successfully", { user }));
 });
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+  if (!username?.trim()) {
+    throw new ApiError(400, "Username is missing");
+  }
+  // const user = await User.find({username})
+  const channelInfo = await User.aggregate([
+    {
+      $match: {
+        username: username?.toLowerCase(),
+      },
+    },
+    {
+      $lookup: {
+        //count how many subscriber your channel
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "subscribers",
+      },
+    },
+    {
+      $lookup: {
+        //count you follow channels
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo",
+      },
+    },
+    //now add fileds
+    {
+      $addFields: {
+        subscribersCount: {
+          $size: "$subscribers",
+        },
+        channelSubscribedToCount: {
+          $size: "$subscribedTo",
+        },
+        isSubscribedChannel: {
+          $cond: {
+            if: {
+              $in: [req.user?._id, "subscribers.subscriber"],
+            },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        fullName: 1,
+        username: 1,
+        subscribersCount: 1,
+        channelSubscribedToCount: 1,
+        isSubscribedChannel: 1,
+        coverImage: 1,
+        avatar: 1,
+        email: 1,
+      },
+    },
+  ]);
+  if (!channelInfo?.length) {
+    throw new ApiError(404, "Channel does not exist");
+  }
+  console.log("Channel data :", channelInfo);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, "User Channel Fetched Successfully", channelInfo[0])
+    );
+});
 
 export {
   registerUser,
@@ -304,4 +377,5 @@ export {
   getCurrentUser,
   updateAvatarimg,
   updateCoverimg,
+  getUserChannelProfile
 };
