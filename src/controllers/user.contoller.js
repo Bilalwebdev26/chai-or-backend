@@ -377,5 +377,5 @@ export {
   getCurrentUser,
   updateAvatarimg,
   updateCoverimg,
-  getUserChannelProfile
+  getUserChannelProfile,
 };
