@@ -21,7 +21,7 @@ router.route("/logout").post(verifyJwt,logoutUser)
 router.route("/refreshtoken").post(refreshAccessToken)
 router.route("/updateusername").put(verifyJwt,updateProfileNames)
 router.route("/changepassword").post(verifyJwt,changeCurrentPassword)
-router.route("/updateavatarimage").put(verifyJwt,updateAvatarimg)
+router.route("/updateavatarimage").post(verifyJwt,updateAvatarimg)
 
 
 export default router;

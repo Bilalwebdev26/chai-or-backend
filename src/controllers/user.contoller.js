@@ -243,13 +243,13 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 const updateAvatarimg = asyncHandler(async (req, res) => {
   const AvatarLocalPath = req.file?.path;
-  console.log("Req.file : ",req.file)
+  console.log("Req.file : ", req.file);
   if (!AvatarLocalPath) {
     throw new ApiError(400, "Avatar Local file is missing");
   }
-  const user = await User.findById(req.user?._id)
-   // If user has an existing avatar, delete it from Cloudinary
-   if (user.avatar) {
+  const user = await User.findById(req.user?._id);
+  // If user has an existing avatar, delete it from Cloudinary
+  if (user.avatar) {
     const publicId = user.avatar.split("/").pop().split(".")[0]; // Extract public ID from URL
     await cloudinary.uploader.destroy(publicId, (error, result) => {
       if (error) {
@@ -285,13 +285,16 @@ const updateCoverimg = asyncHandler(async (req, res) => {
   if (!coverImageLocalPath) {
     throw new ApiError(400, "Cover img local path is missing");
   }
-  const user = await User.findById(req.user?._id)
-   // If user has an existing avatar, delete it from Cloudinary
-   if (user.coverImage) {
+  const user = await User.findById(req.user?._id);
+  // If user has an existing avatar, delete it from Cloudinary
+  if (user.coverImage) {
     const publicId = user.coverImage.split("/").pop().split(".")[0]; // Extract public ID from URL
     await cloudinary.uploader.destroy(publicId, (error, result) => {
       if (error) {
-        throw new ApiError(500, "Error deleting old Cover Image from Cloudinary");
+        throw new ApiError(
+          500,
+          "Error deleting old Cover Image from Cloudinary"
+        );
       }
     });
   }
@@ -387,7 +390,9 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       new ApiResponse(200, "User Channel Fetched Successfully", channelInfo[0])
     );
 });
-
+const getWatchHistory = asyncHandler(async (req, res) => {
+  
+});
 export {
   registerUser,
   loginUser,
@@ -399,4 +404,5 @@ export {
   updateAvatarimg,
   updateCoverimg,
   getUserChannelProfile,
+  getWatchHistory,
 };
