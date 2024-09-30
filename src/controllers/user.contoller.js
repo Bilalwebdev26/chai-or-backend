@@ -187,6 +187,10 @@ const updateProfileNames = asyncHandler(async (req, res) => {
   if (!newfullName && !newusername) {
     throw new ApiError(400, "All fileds are empty");
   }
+  const newusernameCheck = await User.findOne({ username: newusername });
+  if (newusernameCheck) {
+    throw new ApiError(409, "Username already Taken");
+  }
   const user = await User.findById(req.user?._id);
   // this is first way to save
 
@@ -391,7 +395,11 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     );
 });
 const getWatchHistory = asyncHandler(async (req, res) => {
-  
+  const watchHistory = await User.aggregate([
+    {
+      $match: {},
+    },
+  ]);
 });
 export {
   registerUser,
