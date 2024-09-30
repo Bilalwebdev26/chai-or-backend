@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import jwt, { decode } from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const generateAccessRefreshToken = async (userId) => {
   try {
@@ -395,11 +396,52 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     );
 });
 const getWatchHistory = asyncHandler(async (req, res) => {
-  const watchHistory = await User.aggregate([
+  const userWatchHistory = await User.aggregate([
     {
-      $match: {},
+      $match: {
+        //first pipline
+        //mongoose not working here
+        //create mongoose object id
+        _id: new mongoose.Types.ObjectId(req.user._id),
+      },
     },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    fullName: 1,
+                    username: 1,
+                    avatar: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $addFields:{
+              owner:{
+                $first:"$owner"
+              }
+            }
+          }
+        ],
+      },
+    },
+    {},
   ]);
+  return res.status(200).json(new ApiResponse(200,"Watch History fetched Successfully",userWatchHistory[0].watchHistory))
 });
 export {
   registerUser,
