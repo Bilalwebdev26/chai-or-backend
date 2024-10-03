@@ -120,8 +120,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: {
-        refreshToken: undefined,
+      $unset: {
+        refreshToken: 1,//this remove the field from document 
       },
     },
     {
@@ -364,7 +364,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         isSubscribedChannel: {
           $cond: {
             if: {
-              $in: [req.user?._id, "subscribers.subscriber"],
+              $in: [req.user?._id, "$subscribers.subscriber"],
             },
             then: true,
             else: false,
@@ -439,7 +439,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         ],
       },
     },
-    {},
+    
   ]);
   return res.status(200).json(new ApiResponse(200,"Watch History fetched Successfully",userWatchHistory[0].watchHistory))
 });

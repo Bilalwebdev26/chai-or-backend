@@ -3,6 +3,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import {
   changeCurrentPassword,
+  getCurrentUser,
   getUserChannelProfile,
   getWatchHistory,
   loginUser,
@@ -35,6 +36,7 @@ router.route("/logout").post(verifyJwt, logoutUser);
 router.route("/refreshtoken").post(refreshAccessToken);
 router.route("/updateusername").put(verifyJwt, updateProfileNames);
 router.route("/changepassword").post(verifyJwt, changeCurrentPassword);
+router.route("/getcurrentuser").get(verifyJwt,getCurrentUser)
 router
   .route("/updateavatarimage")
   .post(verifyJwt, upload.single("avatar"), updateAvatarimg);
