@@ -121,7 +121,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     req.user._id,
     {
       $unset: {
-        refreshToken: 1,//this remove the field from document 
+        refreshToken: 1, //this remove the field from document
       },
     },
     {
@@ -430,18 +430,25 @@ const getWatchHistory = asyncHandler(async (req, res) => {
             },
           },
           {
-            $addFields:{
-              owner:{
-                $first:"$owner"
-              }
-            }
-          }
+            $addFields: {
+              owner: {
+                $first: "$owner",
+              },
+            },
+          },
         ],
       },
     },
-    
   ]);
-  return res.status(200).json(new ApiResponse(200,"Watch History fetched Successfully",userWatchHistory[0].watchHistory))
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Watch History fetched Successfully",
+        userWatchHistory[0].watchHistory
+      )
+    );
 });
 export {
   registerUser,
