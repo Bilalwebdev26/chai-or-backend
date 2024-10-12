@@ -12,5 +12,5 @@ conectDB()
     });
   })
   .catch((err) => {
-    console.log(`Error in Server : ${err}`)
+    console.log(`Error in Server : ${err}`);
   });
